@@ -2,50 +2,178 @@
     $pathFiles = __DIR__ . '\php-excel-reader-2.21';
     require ($pathFiles.'\excel_reader2.php');
     require($pathFiles.'\SpreadsheetReader.php');
-
     error_reporting('E_NOTICE');
-    $excel = new SpreadsheetReader($pathFiles.'\quina.xls');
-    $num = $bol = 0;
-    $val = [];
-    $per = [];
-    $jbol = 1;
 
-    for ($j=2; $j<7; $j++){
-        echo "[ Bola número " . $jbol++ . " ]<br><br>";
+    //Função que mostra todas as bolas sorteadas
+    function bolas_sorteadas ($pathFiles) {
+        $excel = new SpreadsheetReader($pathFiles.'\quina.xls');
 
-        for ($i=1; $i<81; $i++)
+        $i = 0;
+        foreach ($excel as $row)
         {
-        //Lê os dados do excel
+            $bola1[$i] = $row[2];
+            $bola2[$i] = $row[3];
+            $bola3[$i] = $row[4];
+            $bola4[$i] = $row[5];
+            $bola5[$i] = $row[6];
+            $i++;
+        }
 
-            foreach ($excel as $Row)
+        return [$bola1, $bola2, $bola3, $bola4, $bola5];
+    }
+
+    //Função que calcula a quantidade de acertos individuais de cada bola
+    function bolas_prob ($bola) {
+        $quantidadeAcerto = 0;
+        $qtdIndividual = [];
+        $numero = 0;
+
+        for ($i=1; $i < 81; $i++)
+        {
+            for ($j=1; $j < count($bola); $j++)
             {
-                if ($Row[$j] == $i) {
+                if($bola[$j] == $i) {
+                    $quantidadeAcerto++;
+                }
+            }
+
+            $qtdIndividual[$i] = $quantidadeAcerto;
+            $resultado = ($quantidadeAcerto - $qtdIndividual[$i-1]);
+
+            //Filtra somente os resultados que sairam mais de 78 vezes
+            if($resultado > 78) {
+                echo "A bola número $i saiu : " . $resultado . " vezes. <br>";
+                $numero++;
+            }
+        }
+
+        return $numero;
+    }
+
+    //Função que mostra os resultados
+    function resultados (...$bolas) {
+        $i = $total = 0;
+
+        foreach ($bolas as $bola)
+        {
+            $i++;
+
+            echo "[Bola número {$i}] <br><br>";
+                $prob = bolas_prob($bola);
+                echo "As chances de cair algum desses valores na bola {$i} são: " . (float) (($prob / 80) * 100) . "%";
+                echo "<br><br>";
+            $total += $prob;
+        }
+
+        echo "As chances de cair algum desses números são: " . (float) (($total / 80) * 100) . "%";
+    }
+
+    //Função que mostra as porcentagens gerais
+    function resultado_geral ($bola1, $bola2, $bola3, $bola4, $bola5) {
+        $num          = 0;
+        $zeroAcerto   = 0;
+        $umAcerto     = 0;
+        $doisAcerto   = 0;
+        $tresAcerto   = 0;
+        $quatroAcerto = 0;
+        $cincoAcerto  = 0;
+
+        for ($i=0; $i<count($bola1); $i++)
+        {
+            for ($j=0; $j<5; $j++)
+            {
+                $matriz[$i][0] = $bola1[$i];
+                $matriz[$i][1] = $bola2[$i];
+                $matriz[$i][2] = $bola3[$i];
+                $matriz[$i][3] = $bola4[$i];
+                $matriz[$i][4] = $bola5[$i];
+
+                //As bolas escolhidas pelo usuário
+                if (($matriz[$i][$j] == 8) ||
+                        ($matriz[$i][$j] == 43) ||
+                            ($matriz[$i][$j] == 44) ||
+                                ($matriz[$i][$j] == 60) ||
+                                    ($matriz[$i][$j] == 74))
+                {
+                    $numQtd[$i]++;
                     $num++;
                 }
             }
 
-        //Calcula o número de vezes que certa bola saiu
-            $val[$i] = $num;
-            $resultado = ($num - $val[$i-1]);
-
-            if($resultado > 78 && $resultado < 120) {
-                echo "A bola número $i saiu : " . $resultado . " vezes. <br>";
-                $per[$jbol] = $bol++;
-                $probabilidade[$i] = $i;
+            switch ($numQtd[$i])
+            {
+                case 1:
+                    $umAcerto++;
+                    break;
+                case 2:
+                    $doisAcerto++;
+                    break;
+                case 3:
+                    $tresAcerto++;
+                    break;
+                case 4:
+                    $quatroAcerto++;
+                    break;
+                case 5:
+                    $cincoAcerto++;
+                    break;
+                case 0:
+                    $zeroAcerto++;
+                    break;
             }
         }
 
-        //Calcula a probabilidade de cada bola
-        $parcial = $bol - $per[$jbol-1];
+        $total = ($doisAcerto + $tresAcerto + $quatroAcerto + $cincoAcerto);
 
-        if ($jbol > 2) {
-            echo "As chances de cair algum desses números na bola " . ($jbol-1) ." são de: " . (float) ((($parcial-1) / 80) * 100). "%" ;
-        } else {
-            echo "As chances de cair algum desses números na bola " . ($jbol-1) ."  são de: " . (float) ((($parcial) / 80) * 100). "%" ;
-        }
-
-        echo "<br><br>";
+        return [$umAcerto, $doisAcerto, $tresAcerto, $quatroAcerto, $cincoAcerto, $zeroAcerto, $total];
     }
 
-    //Calcula a probabilidade no geral
-    echo "<br>As chances de cair algum desses números são de: " . (float) (($bol / 80) * 100). "%";
+    list($bola1, $bola2, $bola3, $bola4, $bola5) = bolas_sorteadas($pathFiles);
+
+    $vetor = array(5, 6, 4); //Vetor com os dados a serem procurados
+
+    /*Verifica se uma mesma sequência repete nos jogos anteriores
+      criação par testes
+    */
+    function verifica_linhas ($search_num, $indice_externo) {
+        $mat = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [6, 5, 1],
+        ];
+
+
+        $coluna = [];
+
+        for ($i=0; $i < 3; $i++) {
+            for ($j=0; $j < 3; $j++) {
+                echo $matriz[$i][$j];
+            }
+        }
+    }
+
+    for ($i=0; $i < 3; $i++) {
+        verifica_linhas($vetor[$i], $i);
+        echo "<br>";
+    }
+
+
+    //------------------------------------------------------------------------------------------------//
+
+    // list($um, $dois, $tres, $quatro, $cinco, $zero, $total) = resultado_geral($bola1, $bola2, $bola3, $bola4, $bola5);
+    //
+    //
+    // resultados($bola1, $bola2, $bola3, $bola4, $bola5);
+    //
+    // echo "<br><br>Acertou 5 números {$cinco} vezes.<br>";
+    // echo "Acertou 4 números {$quatro} vezes.<br>";
+    // echo "Acertou 3 números {$tres} vezes.<br>";
+    // echo "Acertou 2 números {$dois} vezes.<br>";
+    // echo "Acertou 1 número {$um} vezes.<br>";
+    // echo "Nenhum acerto {$zero} vezes.<br><br>";
+    //
+    // echo "<h3>Resultado geral</h3>";
+    // printf("[Suas chances de ganhar o prêmio máximo são de :  %.2f%%]<br>", (($cinco / 5162) * 100));
+    // printf("[Suas chances de ganhar com quatro números são de :  %.2f%%]<br>", (($quatro / 5162) * 100));
+    // printf("[Suas chances geral de ganhar algum prêmio são de :  %.2f%%]<br>", (($total / 5162) * 100));
+    // printf("[Suas chances de perder seu dinheiro são de :  %.2f%%]<br>", (($zero / 5162) * 100));
