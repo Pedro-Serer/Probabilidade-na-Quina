@@ -130,33 +130,30 @@
 
     list($bola1, $bola2, $bola3, $bola4, $bola5) = bolas_sorteadas($pathFiles);
 
-    $vetor = array(5, 6, 4); //Vetor com os dados a serem procurados
 
-    /*Verifica se uma mesma sequência repete nos jogos anteriores
-      criação par testes
-    */
-    function verifica_linhas ($search_num, $indice_externo) {
-        $mat = [
-            [1, 2, 3],
-            [4, 5, 6],
-            [6, 5, 1],
-        ];
+    //Simulação da função complexa melhorada (científica)
+    $vetor = array(5, 4, 1); //Vetor com os dados a serem procurados
 
-
-        $coluna = [];
-
-        for ($i=0; $i < 3; $i++) {
-            for ($j=0; $j < 3; $j++) {
-                echo $matriz[$i][$j];
-            }
-        }
-    }
+    $matriz = array(
+        array(0 => [1, 2, 3]),
+        array(1 => [4, 6, 5]),
+        array(2 => [2, 4, 1])
+    );
 
     for ($i=0; $i < 3; $i++) {
-        verifica_linhas($vetor[$i], $i);
-        echo "<br>";
-    }
+        $coluna = array_column($matriz, $i);
 
+        $coluna_toString = implode($coluna[0]);
+        $coluna_toArray  = str_split($coluna_toString);
+
+        /*Verifica se a entrada é igual a algum número na matriz*/
+
+        $new = array_diff($vetor, $coluna_toArray);
+
+        if (count($new) == 1) {
+            echo "O índice {$i} tem boas chances de sair <br>";
+        }
+    }
 
     //------------------------------------------------------------------------------------------------//
 
