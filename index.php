@@ -130,33 +130,28 @@
 
     list($bola1, $bola2, $bola3, $bola4, $bola5) = bolas_sorteadas($pathFiles);
 
+    $vetor = array(2, 32, 31, 53, 18); //Vetor com os dados a serem procurados
 
-    //Simulação da função complexa melhorada (científica)
-    $vetor = array(5, 4, 1); //Vetor com os dados a serem procurados
+    //calcula as chances reais de acertar (científica)
 
-    $matriz = array(
-        array(0 => [1, 2, 3]),
-        array(1 => [4, 6, 5]),
-        array(2 => [2, 4, 1])
-    );
+    for ($i=0; $i<count($bola1); $i++) {
+        $matriz[$i][0] = $bola1[$i];
+        $matriz[$i][1] = $bola2[$i];
+        $matriz[$i][2] = $bola3[$i];
+        $matriz[$i][3] = $bola4[$i];
+        $matriz[$i][4] = $bola5[$i];
+    }
 
-    for ($i=0; $i < 3; $i++) {
-        $coluna = array_column($matriz, $i);
-
-        $coluna_toString = implode($coluna[0]);
-        $coluna_toArray  = str_split($coluna_toString);
-
-        /*Verifica se a entrada é igual a algum número na matriz*/
-
-        $new = array_diff($vetor, $coluna_toArray);
-
-        if (count($new) == 1) {
-            echo "O índice {$i} tem boas chances de sair <br>";
-        }
+    $num = 0;
+    for ($i=7; $i < 5162; $i++) {
+      $chances = array_diff($vetor, $matriz[$i]);
+      if (count($chances) < 3) { //Se conseguiu acertar 3 números em um mesmo jogo passado
+          $num++;
+      }
     }
 
     //------------------------------------------------------------------------------------------------//
-
+    //
     // list($um, $dois, $tres, $quatro, $cinco, $zero, $total) = resultado_geral($bola1, $bola2, $bola3, $bola4, $bola5);
     //
     //
@@ -174,3 +169,4 @@
     // printf("[Suas chances de ganhar com quatro números são de :  %.2f%%]<br>", (($quatro / 5162) * 100));
     // printf("[Suas chances geral de ganhar algum prêmio são de :  %.2f%%]<br>", (($total / 5162) * 100));
     // printf("[Suas chances de perder seu dinheiro são de :  %.2f%%]<br>", (($zero / 5162) * 100));
+    // printf("[Suas chances de acertar mais de 3 números em um mesmo jogo são de :  %.2f%%]<br>", ($num / 5161) * 100);
