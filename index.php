@@ -1,10 +1,15 @@
 <?php
     $pathFiles = __DIR__ . '\php-excel-reader-2.21';
-    require ($pathFiles.'\excel_reader2.php');
+    require($pathFiles.'\excel_reader2.php');
     require($pathFiles.'\SpreadsheetReader.php');
     error_reporting('E_NOTICE');
 
-    //Função que mostra todas as bolas sorteadas
+    /**
+    * Função que mostra as bolas sorteadas ao longo dos anos
+    * @parm $pathfiles (string) | diretório para os arquivos da classe
+    *
+    */
+
     function bolas_sorteadas ($pathFiles) {
         $excel = new SpreadsheetReader($pathFiles.'\quina.xls');
 
@@ -68,105 +73,66 @@
         echo "As chances de cair algum desses números são: " . (float) (($total / 80) * 100) . "%";
     }
 
-    //Função que mostra as porcentagens gerais
-    function resultado_geral ($bola1, $bola2, $bola3, $bola4, $bola5) {
-        $num          = 0;
-        $zeroAcerto   = 0;
-        $umAcerto     = 0;
-        $doisAcerto   = 0;
-        $tresAcerto   = 0;
-        $quatroAcerto = 0;
-        $cincoAcerto  = 0;
-
-        for ($i=0; $i<count($bola1); $i++)
-        {
-            for ($j=0; $j<5; $j++)
-            {
-                $matriz[$i][0] = $bola1[$i];
-                $matriz[$i][1] = $bola2[$i];
-                $matriz[$i][2] = $bola3[$i];
-                $matriz[$i][3] = $bola4[$i];
-                $matriz[$i][4] = $bola5[$i];
-
-                //As bolas escolhidas pelo usuário
-                if (($matriz[$i][$j] == 8) ||
-                        ($matriz[$i][$j] == 43) ||
-                            ($matriz[$i][$j] == 44) ||
-                                ($matriz[$i][$j] == 60) ||
-                                    ($matriz[$i][$j] == 74))
-                {
-                    $numQtd[$i]++;
-                    $num++;
-                }
-            }
-
-            switch ($numQtd[$i])
-            {
-                case 1:
-                    $umAcerto++;
-                    break;
-                case 2:
-                    $doisAcerto++;
-                    break;
-                case 3:
-                    $tresAcerto++;
-                    break;
-                case 4:
-                    $quatroAcerto++;
-                    break;
-                case 5:
-                    $cincoAcerto++;
-                    break;
-                case 0:
-                    $zeroAcerto++;
-                    break;
-            }
-        }
-
-        $total = ($doisAcerto + $tresAcerto + $quatroAcerto + $cincoAcerto);
-
-        return [$umAcerto, $doisAcerto, $tresAcerto, $quatroAcerto, $cincoAcerto, $zeroAcerto, $total];
-    }
-
     list($bola1, $bola2, $bola3, $bola4, $bola5) = bolas_sorteadas($pathFiles);
+    define('MAX', count($bola1));
 
-    $vetor = array(2, 32, 31, 53, 18); //Vetor com os dados a serem procurados
-
+    $vetor = array(8, 1, 32, 60, 74); //Vetor com os dados a serem procurados
+    $zero   = 0;
+    $um     = 0;
+    $dois   = 0;
+    $tres   = 0;
+    $quatro = 0;
+    $cinco  = 0;
     //calcula as chances reais de acertar (científica)
 
-    for ($i=0; $i<count($bola1); $i++) {
+    for ($i=0; $i<MAX; $i++) {
         $matriz[$i][0] = $bola1[$i];
         $matriz[$i][1] = $bola2[$i];
         $matriz[$i][2] = $bola3[$i];
         $matriz[$i][3] = $bola4[$i];
         $matriz[$i][4] = $bola5[$i];
+
+        if ($i > 6) {
+            $chances = array_diff($vetor, $matriz[$i]);
+            switch (count($chances))
+            {
+              case 5:
+                  $zero++;
+                  break;
+                case 4:
+                    $um++;
+                    break;
+                case 3:
+                    $dois++;
+                    break;
+                case 2:
+                    $tres++;
+                    break;
+                case 1:
+                    $quatro++;
+                    break;
+                case 0:
+                    $cinco++;
+                    break;
+            }
+        }
     }
 
-    $num = 0;
-    for ($i=7; $i < 5162; $i++) {
-      $chances = array_diff($vetor, $matriz[$i]);
-      if (count($chances) < 3) { //Se conseguiu acertar 3 números em um mesmo jogo passado
-          $num++;
-      }
-    }
+    $total = $dois + $tres + $quatro + $cinco;
 
     //------------------------------------------------------------------------------------------------//
-    //
-    // list($um, $dois, $tres, $quatro, $cinco, $zero, $total) = resultado_geral($bola1, $bola2, $bola3, $bola4, $bola5);
-    //
-    //
-    // resultados($bola1, $bola2, $bola3, $bola4, $bola5);
-    //
-    // echo "<br><br>Acertou 5 números {$cinco} vezes.<br>";
-    // echo "Acertou 4 números {$quatro} vezes.<br>";
-    // echo "Acertou 3 números {$tres} vezes.<br>";
-    // echo "Acertou 2 números {$dois} vezes.<br>";
-    // echo "Acertou 1 número {$um} vezes.<br>";
-    // echo "Nenhum acerto {$zero} vezes.<br><br>";
-    //
-    // echo "<h3>Resultado geral</h3>";
-    // printf("[Suas chances de ganhar o prêmio máximo são de :  %.2f%%]<br>", (($cinco / 5162) * 100));
-    // printf("[Suas chances de ganhar com quatro números são de :  %.2f%%]<br>", (($quatro / 5162) * 100));
-    // printf("[Suas chances geral de ganhar algum prêmio são de :  %.2f%%]<br>", (($total / 5162) * 100));
-    // printf("[Suas chances de perder seu dinheiro são de :  %.2f%%]<br>", (($zero / 5162) * 100));
-    // printf("[Suas chances de acertar mais de 3 números em um mesmo jogo são de :  %.2f%%]<br>", ($num / 5161) * 100);
+
+    resultados($bola1, $bola2, $bola3, $bola4, $bola5);
+
+    echo "<br><br>Acertou 5 números {$cinco} vezes.<br>";
+    echo "Acertou 4 números {$quatro} vezes.<br>";
+    echo "Acertou 3 números {$tres} vezes.<br>";
+    echo "Acertou 2 números {$dois} vezes.<br>";
+    echo "Acertou 1 número {$um} vezes.<br>";
+    echo "Nenhum acerto {$zero} vezes.<br><br>";
+
+    echo "<h3>Resultado geral</h3>";
+    printf("[Suas chances de ganhar o prêmio máximo são de :  %.2f%%]<br>", (($cinco / 5162) * 100));
+    printf("[Suas chances de ganhar com quatro números são de :  %.2f%%]<br>", (($quatro / 5162) * 100));
+    printf("[Suas chances geral de ganhar algum prêmio são de :  %.2f%%]<br>", (($total / 5162) * 100));
+    printf("[Suas chances de perder seu dinheiro são de :  %.2f%%]<br>", (($zero / 5162) * 100));
