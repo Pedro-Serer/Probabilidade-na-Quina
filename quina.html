@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Probabilidade de ganhar na Quina </title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+      .menu_num {
+        margin-top: 35px;
+        width: 80%;
+        height: 300px;
+      }
+
+      .input_box {
+        margin-top: 125px;
+        width: 500px;
+      }
+
+      .table-but{
+        cursor: pointer;
+      }
+
+      span {
+        border: 2px solid black;
+        width: 90px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body onload="load(7, 17)">
+
+    <header class="w3-container w3-green">
+      <hgroup>
+        <b>
+          <h1>Probabilidades na Quina</h1>
+        </b>
+        <i>
+          <h4>calcule suas chances</h4>
+        </i>
+      </hgroup>
+    </header>
+
+    <!--Espaço em branco-->
+    <div class="w3-padding"></div>
+
+    <div class="w3-row">
+      <center>
+        <div class="w3-container w3-card-2 menu_num">
+          <h3 id="msg-error" class="w3-red" style="display: none;">Proibido deixar espaços em branco</h3>
+          <h3 id="msg-alert" class="w3-yellow w3-text-red" style="display: none;">Apenas números, por favor!</h3>
+          <div class="input_box">
+            <h2 id="process-loader" style="display: none">Processando... <p><i class='fa fa-spinner w3-spin' style='font-size:64px'></i></p></h2>
+            <h2 id="init-loader" style="display: none">Carregando dados... <p><i class='fa fa-spinner w3-spin' style='font-size:64px'></i></p></h2>
+            <form id="form">
+              <span class="w3-round-large"><input id="bola-1" class="w3-input w3-border w3-round-large" type="text" maxlength="2"></span>
+              <span class="w3-round-large"><input id="bola-2" class="w3-input w3-border w3-round-large" type="text" maxlength="2"></span>
+              <span class="w3-round-large"><input id="bola-3" class="w3-input w3-border w3-round-large" type="text" maxlength="2"></span>
+              <span class="w3-round-large"><input id="bola-4" class="w3-input w3-border w3-round-large" type="text" maxlength="2"></span>
+              <span class="w3-round-large"><input id="bola-5" class="w3-input w3-border w3-round-large" type="text" maxlength="2"></span>
+              <button onclick="conectar()" type="button" class="w3-button w3-round-large w3-black w3-margin">Tentar a sorte</button>
+              <button onclick="gerar()" type="button" class="w3-button w3-round-large w3-red w3-margin">Gerar sequência vencedora</button>
+            </form>
+          </div>
+        </div>
+      </center>
+    </div>
+
+    <!--Espaço em branco-->
+    <div class="w3-padding-32"></div>
+
+    <center><h2 class="numeros_escolhidos"></h2></center>
+
+    <!--Espaço em branco-->
+    <div class="w3-padding-32"></div>
+
+    <div class="w3-row">
+      <div class="w3-container w3-card-2 output">
+        <div id="chart1" class="w3-col m6"></div>
+        <center><div id="chart2" class="w3-col m6"></div></center>
+      </div>
+    </div>
+
+    <!--Espaço em branco-->
+    <div id="div-table" class="w3-padding-48" style="display: none"></div>
+
+    <div class="w3-container">
+      <div class="w3-container">
+        <label for="ant" class="table-but">Anterior</label>
+        <button id="ant" onclick="anterior()" class="w3-button w3-round w3-green table-but w3-margin"><<</button>
+        <span id="maximo" class="w3-round"></span>
+        <button id="prox" onclick="proximo()" class="w3-button w3-round w3-green table-but w3-margin">>></button>
+        <label for="prox" class="table-but">Próximo</label>
+      </div>
+
+      <table id="table" class="w3-table w3-bordered w3-striped w3-border test w3-hoverable">
+        <tbody><tr class="w3-green">
+          <th>Concurso (nº)</th>
+          <th>Data</th>
+          <th>Bola 1</th>
+          <th>Bola 2</th>
+          <th>Bola 3</th>
+          <th>Bola 4</th>
+          <th>Bola 5</th>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <!--c3 charts-->
+    <script src="c3-0.7.0/c3-0.7.0/docs/js/d3-5.8.2.min.js" charset="utf-8"></script>
+    <script src="c3-0.7.0/c3-0.7.0/docs/js/c3.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
