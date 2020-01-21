@@ -6,7 +6,7 @@
 
     /**
     * Função que mostra as bolas sorteadas ao longo dos anos
-    * @parm $pathfiles (string) | diretório para os arquivos da classe
+    * @param $pathfiles (string) | diretório para os arquivos da classe
     *
     */
 
