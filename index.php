@@ -7,7 +7,6 @@
     /**
     * Função que mostra as bolas sorteadas ao longo dos anos
     * @param $pathfiles (string) | diretório para os arquivos da classe
-    *
     */
 
     function bolas_sorteadas ($pathFiles) {
